@@ -37,14 +37,22 @@ class CollaboratorRepository:
                     result = conn_oracle.execute(text(sql.query_oracle), {"NR_CPF": row["nr_cpf"]})
                     data = result.fetchall()
                     if data:
-                        users_tasy.extend([
-                            {
-                                "nm_pessoa_fisica": r[0],
-                                "nm_usuario": r[1],
-                                "dia_desligamento": row.get("dia_desligamento"),
-                                "dt_desligamento": row.get("dt_desligamento"),
-                            } for r in data
-                        ])
+                        tasy_user = data[0]
+                        users_tasy.append({
+                            "nm_pessoa_fisica": row.get("nm_pessoa_fisica"),
+                            "nm_usuario": tasy_user[1],
+                            "dia_desligamento": row.get("dia_desligamento"),
+                            "dt_desligamento": row.get("dt_desligamento"),
+                            "tem_usuario": True,
+                        })
+                    else :
+                        users_tasy.append({
+                            "nm_pessoa_fisica": row.get("nm_pessoa_fisica"),
+                            "nm_usuario": None,
+                            "dia_desligamento": row.get("dia_desligamento"),
+                            "dt_desligamento": row.get("dt_desligamento"),
+                            "tem_usuario": False
+                        })
 
             return users_tasy, 200
         except Exception as e:
