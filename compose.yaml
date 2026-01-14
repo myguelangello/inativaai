@@ -1,0 +1,37 @@
+networks:
+  apps_net:
+    external: true
+services:
+  inativaai:
+    image: inativaai:v1
+    container_name: inativaai
+    build:
+      context: .
+    ports:
+      - "${PORT_API}:${PORT_API}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT_API}/health"]
+      interval: 1h
+      timeout: 15s
+      retries: 3
+    env_file:
+      - .env
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 512M      # Limite máximo de memória
+          cpus: "0.5"       # Limite de CPU (metade de um núcleo)
+        reservations:
+          memory: 256M      # Reserva mínima de memória
+    networks:
+      - apps_net
+    command: ["gunicorn",
+      "--bind", "0.0.0.0:${PORT_API}",
+      "--workers", "4",
+      "--threads", "2",
+      "--access-logfile", "-",
+      --access-logformat, "{\"ip\":\"%(h)s\", \"time\":\"%(t)s\", \"request\":\"%(r)s\", \"status\":%(s)s, \"bytes\":%(b)s, \"duration_ms\":%(L)s}",
+      "--log-level", "info",
+      "app:app"
+    ]
