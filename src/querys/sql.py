@@ -6,7 +6,8 @@ SELECT
     a.nome AS nm_pessoa_fisica
 FROM colaborador a
 WHERE 'w' = 'w'
-  AND a.datadesligamento BETWEEN current_date - INTERVAL '1 week' AND current_date - INTERVAL '1 day';
+  AND a.datadesligamento BETWEEN current_date - INTERVAL '10 week' AND current_date - INTERVAL '1 day'
+ORDER BY a.nome ASC;
 '''
 
 query_oracle = '''
