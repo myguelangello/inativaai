@@ -16,14 +16,18 @@ class CollaboratorUseCase:
             if status_code != 200:
                 return { "message": "Nenhum dos colaboradores desligados foi encontrado no Tasy" }, 404
 
-            if users_tasy == []:
+            print("retorno do comp_collaborator: ", users_tasy)
+
+            users_with_login = [user for user in users_tasy if user.get("tem_usuario")]
+            if users_with_login == []:
                 return { 
-                    "message": "Não há usuários para serem inativados no período", 
+                    "message": "Os colaboradores desligados não foram encontrados no Tasy ou já estão inativados", 
                     "deactivated_users": users_tasy
                 }, status_code
             
-            result, status_code = self.collaborator_repo.inativar_collaborator(users_tasy)
+            result, status_code = self.collaborator_repo.inativar_collaborator(users_with_login)
 
+            print("retorno do inativar_collaborator: ", result)
             return { 
                 "message": result, 
                 "deactivated_users": users_tasy 
@@ -42,6 +46,7 @@ class ServiceOrderUseCase:
     def create_ad_deactivation_ticket(self):
         try:
             data, status_code = self.collaborator_repo.get_collaborator()
+            print("data: ", data)
             if status_code != 200:
                 return { "message": "Erro ao buscar colaboradores" }, status_code
 
